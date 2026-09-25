@@ -83,3 +83,31 @@ This structure may be tested as a decision-layer constraint, but should not be a
 ### E1 conclusion
 
 The dataset is large and memory-sensitive. Source 1 is complete and deduplicated, while S2/S3 contain missing addresses. Ground truth is predominantly multi-match and contains approximately 5.6% no-match S1 records. Candidate generation must therefore prioritize high recall, while the final decision layer must support zero-to-many matches.
+
+---
+
+## E2 — Exact Normalized Name Blocking
+
+Status: Complete
+
+### Results
+
+| Metric | Result |
+|---|---:|
+| Total true matches | 7,638,365 |
+| Recovered true matches | 1,958,580 |
+| Candidate recall | 25.6414% |
+| Average candidates/S1 | 11.10 |
+| Median candidates/S1 | 2 |
+| P95 candidates/S1 | 69 |
+| Maximum candidates/S1 | 1,071 |
+
+### Conclusion
+
+Exact normalized business-name blocking alone is insufficient because it recovers only 25.64% of true matches.
+
+It will be retained as a potentially useful component of a future multi-block union because it produces relatively small candidate sets, but it cannot be used as the primary blocking strategy.
+
+### Next experiment
+
+Evaluate stronger character-based blocking strategies while monitoring candidate recall and candidate-set size.

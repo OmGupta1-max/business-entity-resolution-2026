@@ -111,3 +111,43 @@ It will be retained as a potentially useful component of a future multi-block un
 ### Next experiment
 
 Evaluate stronger character-based blocking strategies while monitoring candidate recall and candidate-set size.
+
+---
+
+## E3-A — Full Character TF-IDF Blocking
+
+Status: Rejected for current hardware
+
+### Attempt
+
+A character 3-4 gram TF-IDF representation was attempted over all S2/S3 business names.
+
+Total records:
+
+10,320,219
+
+Configuration:
+
+- analyzer: character
+- ngram_range: (3, 4)
+- min_df: 2
+- max_features: 1,000,000
+- sublinear_tf: True
+
+### Result
+
+The experiment failed during sparse-matrix construction because the system could not allocate an additional 1.66 GiB array.
+
+Error:
+
+NumPy ArrayMemoryError.
+
+### Decision
+
+Do not use a full S2+S3 character TF-IDF matrix on the current ~8 GB RAM machine.
+
+Character similarity may still be useful later for pairwise features on a much smaller candidate set.
+
+### Lesson
+
+Character similarity should be applied after blocking rather than creating a massive global TF-IDF index.

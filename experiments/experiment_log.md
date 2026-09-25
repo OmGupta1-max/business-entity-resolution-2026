@@ -1,5 +1,85 @@
 # Experiment Log
 
-| ID | Experiment | Result | Candidate Recall | Avg Candidates | F0.5 | Decision |
-|----|------------|--------|------------------|----------------|------|----------|
-| E0 | Environment + dataset setup | Complete | — | — | — | Continue |
+## E0 â€” Environment and Dataset Setup
+
+Status: Complete
+
+- Python virtual environment created.
+- Core dependencies installed successfully.
+- Dataset copied locally.
+- Official submission validator available.
+- GitHub repository initialized.
+- Dataset excluded from Git via `.gitignore`.
+
+---
+
+## E1 â€” Basic Dataset EDA
+
+Status: Complete
+
+### Source sizes
+
+| Dataset | Rows | Unique IDs | Duplicate IDs |
+|---|---:|---:|---:|
+| Train Source 1 | 2,206,821 | 2,206,821 | 0 |
+| Train Source 2 | 5,034,616 | 5,034,616 | 0 |
+| Train Source 3 | 5,285,603 | 5,285,603 | 0 |
+
+Total source records: 12,527,040.
+
+### Missing values
+
+| Dataset | Empty business name | Empty business address | Empty country |
+|---|---:|---:|---:|
+| Train Source 1 | 0 | 0 | 0 |
+| Train Source 2 | 0 | 168,967 | 0 |
+| Train Source 3 | 0 | 175,916 | 0 |
+
+Implication:
+
+Address cannot be a mandatory blocking condition because approximately 3.3% of S2/S3 records have no address.
+
+### Training countries
+
+Training sources contain:
+
+- US
+- India
+
+The pipeline must not hard-code the country universe because the test data includes France.
+
+### Ground truth
+
+| Statistic | Result |
+|---|---:|
+| Total S1 records | 2,206,821 |
+| Zero matches | 123,247 |
+| Exactly one match | 119,157 |
+| Multiple matches | 1,964,417 |
+| Average matches/S1 | 3.461 |
+| Median matches/S1 | 3 |
+| Maximum matches/S1 | 11 |
+| S2 matches | 3,693,619 |
+| S3 matches | 3,944,746 |
+
+Implications:
+
+- The task is not one-to-one matching.
+- The decision layer must support zero-to-many predictions per S1.
+- The system must explicitly support no-match predictions.
+- Selecting only the single highest-scoring candidate is insufficient.
+
+### Match reuse
+
+| Entity type | Matched to multiple S1s | Maximum reuse |
+|---|---:|---:|
+| S2 | 0 | 1 |
+| S3 | 0 | 1 |
+
+Training ground truth therefore shows a one-to-many relationship from S1 to S2/S3, while each matched S2/S3 entity belongs to only one S1.
+
+This structure may be tested as a decision-layer constraint, but should not be assumed to be a universal hard rule without validation.
+
+### E1 conclusion
+
+The dataset is large and memory-sensitive. Source 1 is complete and deduplicated, while S2/S3 contain missing addresses. Ground truth is predominantly multi-match and contains approximately 5.6% no-match S1 records. Candidate generation must therefore prioritize high recall, while the final decision layer must support zero-to-many matches.
